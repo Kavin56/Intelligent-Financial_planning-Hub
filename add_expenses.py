@@ -13,4 +13,4 @@ def app():
 
         if submit_button:
             # Add code here to save expense data (e.g., Firebase or database)
-            st.success(f'Expense added: {category} - {amount} USD')
+            st.success(f'Expense added: {category} - ₹ {amount} ')
