@@ -1,28 +1,47 @@
 import streamlit as st
-from firebase_admin import firestore
+import sqlite3
+import pandas as pd
+
+# Create or connect to an SQLite database
+conn = sqlite3.connect('expenses.db', check_same_thread=False)
+c = conn.cursor()
 
 def app():
-    db = firestore.client()
+    # Check if the user is logged in by checking 'username' in session state
+    if 'username' not in st.session_state or st.session_state['username'] == '':
+        st.warning('Please login first to view your expenses.')
+        return  # Exit early if not logged in
+
+    st.title('View Expenses - ' + st.session_state['username'])
 
     try:
-        st.title('View Expenses - ' + st.session_state['username'])
+        # Fetch all expenses from the database
+        c.execute('SELECT id, category, amount, description, date FROM expenses')
+        expenses = c.fetchall()
 
-        result = db.collection('Expenses').document(st.session_state['username']).get()
-        r = result.to_dict()
-        expenses = r['expenses']
+        if len(expenses) > 0:
+            # Display expenses in a table
+            df = pd.DataFrame(expenses, columns=['ID', 'Category', 'Amount', 'Description', 'Date'])
 
-        def delete_expense(index):
-            expense = expenses[index]
-            try:
-                db.collection('Expenses').document(st.session_state['username']).update({"expenses": firestore.ArrayRemove([expense])})
-                st.warning('Expense deleted')
-            except:
-                st.write('Something went wrong..')
+            # Display the dataframe in the Streamlit app
+            st.dataframe(df)
 
-        for index in range(len(expenses)-1, -1, -1):
-            st.text_area(label='', value=f"Category: {expenses[index]['category']} \nAmount: {expenses[index]['amount']} USD \nDescription: {expenses[index]['description']}")
-            st.button('Delete Expense', on_click=delete_expense, args=(index,), key=index)
+            # Allow user to select an entry to delete
+            expense_to_delete = st.selectbox('Select an expense to delete:', df['ID'])
 
-    except:
-        if st.session_state.username == '':
-            st.text('Please Login first')
+            if st.button('Delete Selected Expense'):
+                # Delete the selected expense by ID
+                c.execute('DELETE FROM expenses WHERE id = ?', (expense_to_delete,))
+                conn.commit()
+                st.success(f'Expense with ID {expense_to_delete} has been deleted.')
+
+                # Refresh the displayed table after deletion
+                c.execute('SELECT id, category, amount, description, date FROM expenses')
+                expenses = c.fetchall()
+                df = pd.DataFrame(expenses, columns=['ID', 'Category', 'Amount', 'Description', 'Date'])
+                st.dataframe(df)
+        else:
+            st.warning('No expenses found.')
+
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
