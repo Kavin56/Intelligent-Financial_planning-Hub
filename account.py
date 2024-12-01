@@ -1,8 +1,6 @@
 import streamlit as st
 import firebase_admin
-from firebase_admin import firestore
 from firebase_admin import credentials
-from firebase_admin import auth
 import json
 import requests
 
@@ -73,56 +71,40 @@ def app():
             payload = json.dumps(payload)
             r = requests.post(rest_api_url, params={"key": "AIzaSyApr-etDzcGcsVcmaw7R7rPxx3A09as7uw"}, data=payload)
             if r.status_code == 200:
-                return True, "Reset email Sent"
+                return True, "Reset email sent"
             else:
-                # Handle error response
                 error_message = r.json().get('error', {}).get('message')
                 return False, error_message
         except Exception as e:
             return False, str(e)
 
-    def f(): 
+    def login_user():
         try:
             userinfo = sign_in_with_email_and_password(st.session_state.email_input, st.session_state.password_input)
             st.session_state.username = userinfo['username']
             st.session_state.useremail = userinfo['email']
 
-            global Usernm
-            Usernm = (userinfo['username'])
-
             st.session_state.signedout = True
             st.session_state.signout = True
+        except:
+            st.warning('Login failed')
 
-        except: 
-            st.warning('Login Failed')
-
-    def t():
+    def logout_user():
         st.session_state.signout = False
-        st.session_state.signedout = False   
+        st.session_state.signedout = False
         st.session_state.username = ''
-
-    def forget():
-        email = st.text_input('Email')
-        if st.button('Send Reset Link'):
-            success, message = reset_password(email)
-            if success:
-                st.success("Password reset email sent successfully.")
-            else:
-                st.warning(f"Password reset failed: {message}")
 
     if "signedout" not in st.session_state:
         st.session_state["signedout"] = False
     if 'signout' not in st.session_state:
         st.session_state['signout'] = False    
 
-    if not st.session_state["signedout"]:  # Only show if the state is False, hence the button has never been clicked
-        choice = st.selectbox('Login/Signup', ['Login', 'Sign up'])
-        email = st.text_input('Email Address')
-        password = st.text_input('Password', type='password')
-        st.session_state.email_input = email
-        st.session_state.password_input = password
+    if not st.session_state["signedout"]:  # Show login/signup/forget password options only if user is not signed in
+        choice = st.selectbox('Choose an option:', ['Sign up', 'Login', 'Forget Password'])
 
         if choice == 'Sign up':
+            email = st.text_input('Email Address')
+            password = st.text_input('Password', type='password')
             username = st.text_input("Enter your unique username")
 
             if st.button('Create my account'):
@@ -130,16 +112,29 @@ def app():
                 st.success('Account created successfully!')
                 st.markdown('Please Login using your email and password')
                 st.balloons()
-        else:
-            st.button('Login', on_click=f)
-            forget()
+
+        elif choice == 'Login':
+            email = st.text_input('Email Address')
+            password = st.text_input('Password', type='password')
+            st.session_state.email_input = email
+            st.session_state.password_input = password
+
+            if st.button('Login'):
+                login_user()
+
+        elif choice == 'Forget Password':
+            email = st.text_input('Enter your email address')
+            if st.button('Send Reset Link'):
+                success, message = reset_password(email)
+                if success:
+                    st.success("Password reset email sent successfully.")
+                else:
+                    st.warning(f"Password reset failed: {message}")
 
     if st.session_state.signout:
-        st.text('Name ' + st.session_state.username)
-        st.text('Email id: ' + st.session_state.useremail)
-        st.button('Sign out', on_click=t)
+        st.text(f'Name: {st.session_state.username}')
+        st.text(f'Email id: {st.session_state.useremail}')
+        st.button('Sign out', on_click=logout_user)
 
-    def ap():
-        st.write('Posts')
-
-# To run the app, use `streamlit run your_script.py`
+if __name__ == "__main__":
+    app()

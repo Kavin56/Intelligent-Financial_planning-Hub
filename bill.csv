@@ -1,4 +1,7 @@
 category,amount,description,date
-Food,500,Lunch,2024-11-30
-Transport,200,Taxi,2024-11-29
-Entertainment,150,Movie,2024-11-28
+Food,1200,Lunch at restaurant,2024-12-01
+Food,800,Grocery shopping,2024-12-02
+Food,1100,Dinner with family,2024-12-03
+Transport,400,Cab to airport,2024-12-01
+Entertainment,300,Movie ticket,2024-12-01
+Utilities,500,Electricity bill,2024-12-01
