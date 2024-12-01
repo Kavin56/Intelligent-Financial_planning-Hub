@@ -1,5 +1,3 @@
----
-
 # 💰 Financial Planning Hub  
 
 ### 📜 Overview  
