@@ -1,6 +1,9 @@
-firebase_admin
 streamlit
-streamlit_option_menu
-python-dotenv
+firebase-admin
+google-generativeai
 twilio
+pandas
 matplotlib
+reportlab
+python-dotenv
+requests
