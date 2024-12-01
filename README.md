@@ -1,5 +1,3 @@
-Here’s a fun and comprehensive **README** file for your **Financial Planning Hub** project, complete with emojis!  
-
 ---
 
 # 💰 Financial Planning Hub  
