@@ -62,12 +62,13 @@ The **Financial Planning Hub** is a streamlined and user-friendly application de
 2. Firebase credentials (`firebasekey.json`).  
 3. `.env` file containing your API keys and configurations:  
    ```plaintext
-   GOOGLE_GENAI_API_KEY=<your-google-genai-api-key>
-   TWILIO_ACCOUNT_SID=<your-twilio-account-sid>
-   TWILIO_AUTH_TOKEN=<your-twilio-auth-token>
-   TWILIO_PHONE_NUMBER=<your-twilio-phone-number>
-   USER_PHONE_NUMBER=<user-phone-number>
-   analytics_tag=<your-google-analytics-tag>
+   TWILIO_ACCOUNT_SID=<YOUR-ACCOUNT-SID>
+   TWILIO_AUTH_TOKEN=<AUTH-TOKEN>
+   TWILIO_PHONE_NUMBER=<YOUR-TWILIO-PHONE-NUMBER>
+   USER_PHONE_NUMBER=<USER-PHONE-NUMBER>
+   GOOGLE_GENAI_API_KEY=<YOUR-GEMINI-API-KEY>
+   DATABASE_NAME=expenses.db
+
    ```  
 
 ### 🖥️ Setup  
