@@ -31,11 +31,10 @@ def get_expenses_data():
 
 # Function to remove unwanted symbols
 def clean_report(report_text):
-    cleaned_text = re.sub(r'[^\w\s.,!?]', '', report_text)  # Keep only letters, digits, and selected punctuation
+    cleaned_text = re.sub(r'[^\w\s.,!?]', '', report_text) 
     return cleaned_text
 
-# Function to generate the financial report using Google Gemini
-def generate_report(salary, expenses_summary):
+=def generate_report(salary, expenses_summary):
     prompt = f"""
     I have the following expenses summary:
     {expenses_summary}
@@ -45,11 +44,9 @@ def generate_report(salary, expenses_summary):
     Please create a financial report summarizing my expenses and how much I can save from my salary. Include insights on spending patterns, possible savings, and suggestions on managing finances better.
     """
     
-    # Generate content using Google Gemini (model: gemini-1.5-flash)
     model = genai.GenerativeModel(model_name="gemini-1.5-flash")
     response = model.generate_content(prompt)
     
-    # Clean the report to remove unwanted symbols
     cleaned_report = clean_report(response.text)
     
     return cleaned_report
@@ -59,7 +56,6 @@ from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 from io import BytesIO
 
-# Function to save the report as PDF using ReportLab
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
@@ -67,14 +63,12 @@ from io import BytesIO
 
 # Function to save the report as PDF using ReportLab
 def save_pdf(report, scatter_img_path, pie_img_path, bar_img_path):
-    # Create a BytesIO buffer to save the PDF in memory
     pdf_output = BytesIO()
     
     # Create a canvas to draw the PDF content
     c = canvas.Canvas(pdf_output, pagesize=letter)
     width, height = letter
     
-    # First page: Insert images (plots)
     c.setFont("Helvetica", 12)
     c.drawString(40, height - 40, "Financial Dashboard Plots")
     
@@ -82,20 +76,18 @@ def save_pdf(report, scatter_img_path, pie_img_path, bar_img_path):
     plot_width = 450
     plot_height = 180
     
-    # Insert the images (charts) with increased size and adjusted Y positions
-    # Adjusting the Y positions to raise the images higher
+
     c.drawImage(scatter_img_path, 40, height - 120 - plot_height, width=plot_width, height=plot_height, preserveAspectRatio=True)
     c.drawImage(pie_img_path, 40, height - 280 - plot_height, width=plot_width, height=plot_height, preserveAspectRatio=True)
     c.drawImage(bar_img_path, 40, height - 440 - plot_height, width=plot_width, height=plot_height, preserveAspectRatio=True)
     
-    # Create a new page for the generated report
     c.showPage()
 
     # Second page: Insert the generated financial report text
     c.setFont("Helvetica", 10)
     text = c.beginText(40, height - 40)
     text.setFont("Helvetica", 10)
-    text.setTextOrigin(40, height - 60)  # Adjust starting position for the text
+    text.setTextOrigin(40, height - 60)  
 
     # Add proper line spacing and better structure
     line_spacing = 14  # Increased line spacing for better readability
@@ -106,8 +98,8 @@ def save_pdf(report, scatter_img_path, pie_img_path, bar_img_path):
     
     # Loop through the lines and wrap the text
     for line in lines:
-        wrapped_line = text_wrap(line, width - 80, c)  # Wrap each line based on width
-        text.textLines(wrapped_line)  # Add the wrapped text to the PDF
+        wrapped_line = text_wrap(line, width - 80, c)  
+        text.textLines(wrapped_line)  
 
     c.drawText(text)
 
@@ -119,15 +111,12 @@ def save_pdf(report, scatter_img_path, pie_img_path, bar_img_path):
     pdf_output.seek(0)
     return pdf_output
 
-# Helper function to wrap text based on the maximum width of the page
 def text_wrap(text, max_width, c):
-    # Create a list of wrapped lines that fit the page width
     words = text.split(' ')
     lines = []
     current_line = ''
     
     for word in words:
-        # If the current line length + the next word exceeds the maximum width, start a new line
         if c.stringWidth(current_line + ' ' + word if current_line else word) > max_width:
             lines.append(current_line)
             current_line = word
@@ -143,19 +132,16 @@ def text_wrap(text, max_width, c):
 
 # Function to save each plot as a temporary image file
 def save_plot_as_temp_file(fig):
-    # Create a temporary file to save the plot
     with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as tmpfile:
         fig.savefig(tmpfile, format='png')
-        tmpfile.close()  # Close the file so it can be used later
+        tmpfile.close()  
         return tmpfile.name
 
-# Streamlit UI
 def app():
     st.subheader('Dashboard')
 
     # Check if the user is logged in
     if st.session_state.get('signedout') and st.session_state.get('username'):
-        # User is logged in, display the dashboard
         st.success(f"Welcome, {st.session_state['username']}!")
 
         # Fetch expenses data from the database
