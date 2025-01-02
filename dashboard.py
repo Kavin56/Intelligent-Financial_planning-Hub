@@ -34,7 +34,7 @@ def clean_report(report_text):
     cleaned_text = re.sub(r'[^\w\s.,!?]', '', report_text) 
     return cleaned_text
 
-=def generate_report(salary, expenses_summary):
+def generate_report(salary, expenses_summary):
     prompt = f"""
     I have the following expenses summary:
     {expenses_summary}
